@@ -3,7 +3,7 @@ package battleship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
+import org.apache.commons.lang3.time.StopWatch;
 import java.util.*;
 
 public class Game implements IGame
@@ -168,6 +168,7 @@ public class Game implements IGame
 	private Integer countHits;
 	private Integer countSinks;
 	private int moveNumber;
+	private final org.apache.commons.lang3.time.StopWatch gameTimer;
 
 	//------------------------------------------------------------------
 	public Game(IFleet myFleet)
@@ -184,6 +185,8 @@ public class Game implements IGame
 		this.countRepeatedShots = 0;
 		this.countHits = 0;
 		this.countSinks = 0;
+		// Inicia o cronómetro assim que o jogo é criado/iniciado
+		this.gameTimer = org.apache.commons.lang3.time.StopWatch.createStarted();
 	}
 
 	@Override
@@ -447,7 +450,15 @@ public class Game implements IGame
 	}
 
 	public void over() {
-			System.out.println();
+		// Parar o cronómetro e imprimir o tempo total gasto no jogo
+		if (this.gameTimer != null && this.gameTimer.isStarted()) {
+			this.gameTimer.stop();
+			long totalMillis = this.gameTimer.getTime();
+			long seconds = totalMillis / 1000;
+			System.out.println("Tempo total de jogo: " + seconds + " segundos (" + totalMillis + " ms)");
+		}
+
+		    System.out.println();
 			System.out.println("+--------------------------------------------------------------+");
 			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
 			System.out.println("+--------------------------------------------------------------+");
