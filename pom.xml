@@ -13,45 +13,45 @@
 	<url>https://github.com/britoeabreu/Battleship2.git</url>
 
 	<developers>
-	  <developer>
-		<id>mgoulao</id>
-		<name>Miguel Goulão</name>
-		<email>mgoul@fct.unl.pt</email>
-		<organization>FCT/UNL</organization>
-		<roles>
-		  <role>Product Owner</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>mgoulao</id>
+			<name>Miguel Goulão</name>
+			<email>mgoul@fct.unl.pt</email>
+			<organization>FCT/UNL</organization>
+			<roles>
+				<role>Product Owner</role>
+			</roles>
+		</developer>
 
-	  <developer>
-		<id>jose-vicente-reis</id>
-		<name>José Vicente Reis</name>
-		<email>Jose_Vicente_Reis@iscte-iul.pt</email>
-		<organization>Iscte-IUL</organization>
-		<roles>
-		  <role>Team Member</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>jose-vicente-reis</id>
+			<name>José Vicente Reis</name>
+			<email>Jose_Vicente_Reis@iscte-iul.pt</email>
+			<organization>Iscte-IUL</organization>
+			<roles>
+				<role>Team Member</role>
+			</roles>
+		</developer>
 
-	  <developer>
-		<id>adriano-lopes</id>
-		<name>Adriano Lopes</name>
-		<email>adriano.lopes@iscte-iul.pt</email>
-		<organization>Iscte-IUL</organization>
-		<roles>
-		  <role>Team Member</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>adriano-lopes</id>
+			<name>Adriano Lopes</name>
+			<email>adriano.lopes@iscte-iul.pt</email>
+			<organization>Iscte-IUL</organization>
+			<roles>
+				<role>Team Member</role>
+			</roles>
+		</developer>
 
-	  <developer>
-		<id>fernando-brito-abreu</id>
-		<name>Fernando Brito e Abreu</name>
-		<email>fba@iscte-iul.pt</email>
-		<organization>Iscte-IUL</organization>
-		<roles>
-		  <role>Scrum Master</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>fernando-brito-abreu</id>
+			<name>Fernando Brito e Abreu</name>
+			<email>fba@iscte-iul.pt</email>
+			<organization>Iscte-IUL</organization>
+			<roles>
+				<role>Scrum Master</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<properties>
@@ -74,6 +74,8 @@
 		<allure.version>2.31.0</allure.version>
 
 		<jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
+
+		<commons.lang3.version>3.14.0</commons.lang3.version>
 	</properties>
 
 	<dependencies>
@@ -131,6 +133,14 @@
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
 			<version>${jetbrains.annotations.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Apache Commons Lang for StopWatch / Timer implementation -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons.lang3.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
