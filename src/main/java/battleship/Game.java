@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.lang3.time.StopWatch;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class Game implements IGame
@@ -117,15 +120,12 @@ public class Game implements IGame
 
 		assert shots != null;
 
-		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-		// 1. Create a simplified list containing only the desired data
 		List<Map<String, Object>> simplifiedShots = new ArrayList<>();
 		for (IPosition shot : shots) {
 			Map<String, Object> simplePos = new LinkedHashMap<>();
-			// We use getClassicRow() and getClassicColumn() based on your current JSON output
 			simplePos.put("row", String.valueOf(shot.getClassicRow()));
 			simplePos.put("column", shot.getClassicColumn());
 			simplifiedShots.add(simplePos);
@@ -133,7 +133,6 @@ public class Game implements IGame
 
 		String jsonString = null;
 		try {
-			// 2. Serialize the simplified list instead of the raw 'shots' list
 			jsonString = objectMapper.writeValueAsString(simplifiedShots);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Erro ao serializar o JSON", e);
@@ -142,9 +141,59 @@ public class Game implements IGame
 		System.out.println(jsonString);
 		System.out.println();
 
-		// Retornar o JSON
 		return jsonString;
 	}
+
+	// ==========================================
+	// SCOREBOARD (Jackson)
+	// ==========================================
+	private static final String SCORE_FILE = "scoreboard.json";
+
+	public static class ScoreRecord {
+		private String player;
+		private int points;
+
+		public ScoreRecord() {}
+
+		public ScoreRecord(String player, int points) {
+			this.player = player;
+			this.points = points;
+		}
+
+		public String getPlayer() { return player; }
+		public int getPoints() { return points; }
+
+		@Override
+		public String toString() {
+			return player + " - " + points + " pts";
+		}
+	}
+
+	public static void saveScore(String player, int points) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		List<ScoreRecord> scores = loadScores();
+		scores.add(new ScoreRecord(player, points));
+		try {
+			mapper.writeValue(new File(SCORE_FILE), scores);
+		} catch (IOException e) {
+			System.err.println("Erro ao guardar o scoreboard: " + e.getMessage());
+		}
+	}
+
+	public static List<ScoreRecord> loadScores() {
+		ObjectMapper mapper = new ObjectMapper();
+		File file = new File(SCORE_FILE);
+		if (!file.exists()) {
+			return new ArrayList<>();
+		}
+		try {
+			return mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, ScoreRecord.class));
+		} catch (IOException e) {
+			return new ArrayList<>();
+		}
+	}
+	// ==========================================
 
 	//------------------------------------------------------------------
 	public static final int BOARD_SIZE = 10;
@@ -168,7 +217,7 @@ public class Game implements IGame
 	private Integer countHits;
 	private Integer countSinks;
 	private int moveNumber;
-	private final org.apache.commons.lang3.time.StopWatch gameTimer;
+	private final StopWatch gameTimer;
 
 	//------------------------------------------------------------------
 	public Game(IFleet myFleet)
@@ -185,8 +234,7 @@ public class Game implements IGame
 		this.countRepeatedShots = 0;
 		this.countHits = 0;
 		this.countSinks = 0;
-		// Inicia o cronómetro assim que o jogo é criado/iniciado
-		this.gameTimer = org.apache.commons.lang3.time.StopWatch.createStarted();
+		this.gameTimer = StopWatch.createStarted();
 	}
 
 	@Override
@@ -224,7 +272,6 @@ public class Game implements IGame
 	 */
 	public String randomEnemyFire() {
 
-		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
 		Set<IPosition> usablePositions = new HashSet<IPosition>();
@@ -237,11 +284,9 @@ public class Game implements IGame
 
 		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
 
-		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<IPosition>();
 
 		System.out.println();
-		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 
 		IPosition newShot = null;
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
@@ -270,7 +315,6 @@ public class Game implements IGame
 		return Game.jsonShots(shots);
 	}
 
-
 	/**
 	 * Reads and processes the enemy fire input from the specified scanner.
 	 * The method expects input describing positions for enemy shots. It verifies
@@ -290,16 +334,13 @@ public class Game implements IGame
 
 		String input = in.nextLine().trim();
 
-		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<>();
 
 		Scanner inputScanner = new Scanner(input);
 		while (shots.size() < NUMBER_SHOTS && inputScanner.hasNext()) {
-			// Lê a próxima parte e constrói uma posição
 			String token = inputScanner.next();
 
 			if (token.matches("[A-Za-z]")) {
-				// Caso seja somente uma coluna ("A", "B", etc.), esperar o próximo número
 				if (inputScanner.hasNextInt()) {
 					int row = inputScanner.nextInt();
 					shots.add(new Position(token.toUpperCase().charAt(0), row));
@@ -307,7 +348,6 @@ public class Game implements IGame
 					throw new IllegalArgumentException("Posição incompleta! A coluna '" + token + "' não é seguida por uma linha.");
 				}
 			} else {
-				// Caso o token já contenha a coluna e a linha juntas (ex.: "A3")
 				Scanner singleScanner = new Scanner(token);
 				shots.add(Tasks.readClassicPosition(singleScanner));
 			}
@@ -350,8 +390,6 @@ public class Game implements IGame
 		}
 
 		Move move = new Move(moveNumber, shots, shotResults);
-
-//		System.out.println(move);
 
 		move.processEnemyFire(true);
 
@@ -450,7 +488,6 @@ public class Game implements IGame
 	}
 
 	public void over() {
-		// Parar o cronómetro e imprimir o tempo total gasto no jogo
 		if (this.gameTimer != null && this.gameTimer.isStarted()) {
 			this.gameTimer.stop();
 			long totalMillis = this.gameTimer.getTime();
@@ -458,9 +495,9 @@ public class Game implements IGame
 			System.out.println("Tempo total de jogo: " + seconds + " segundos (" + totalMillis + " ms)");
 		}
 
-		    System.out.println();
-			System.out.println("+--------------------------------------------------------------+");
-			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-			System.out.println("+--------------------------------------------------------------+");
+		System.out.println();
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("+--------------------------------------------------------------+");
 	}
 }
