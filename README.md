@@ -1,3 +1,6 @@
+
+Link do vídeo: https://youtu.be/Xh_x-fIy_xs?si=MmSxZtxxPKf9s_xw
+
 # ⚓ Battleship 2.0
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
