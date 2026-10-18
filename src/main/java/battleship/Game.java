@@ -414,17 +414,21 @@ public class Game implements IGame
 
 		if (!pos.isInside()) {
 			countInvalidShots++;
+			BD.guardarJogada(pos,"água");
 			return new ShotResult(false, false, null, false);
 		}
 
 		if (isRepeated || repeatedShot(pos)) {
 			countRepeatedShots++;
+			BD.guardarJogada(pos,"Repetido");
 			return new ShotResult(true, true, null, false);
 		}
 
 		IShip ship = myFleet.shipAt(pos);
-		if (ship == null)
+		if (ship == null) {
+			BD.guardarJogada(pos, "água");
 			return new ShotResult(true, false, null, false);
+		}
 		else
 		{
 			ship.shoot(pos);
@@ -432,6 +436,7 @@ public class Game implements IGame
 			if (!ship.stillFloating()) {
 				countSinks++;
 			}
+			BD.guardarJogada(pos,"Barco");
 			return new ShotResult(true, false, ship, !ship.stillFloating());
 		}
 	}
