@@ -15,6 +15,7 @@
 - [Installation & Setup](#-installation--setup)
 - [Code Architecture](#-code-architecture)
 - [Roadmap](#-roadmap)
+- [Prompt](#-prompt)
 - [Contributing](#-contributing)
 
 ---
@@ -131,6 +132,15 @@ mvn test
 > Use the `-Dtest=ClassName` flag to run specific test suites during development.
 
 ---
+
+## Prompt
+A partir de agora, vais jogar como um jogador experiente, seguindo estas regras em todas as partidas:
+- **Diário de Bordo:** Cria e atualiza um registo sequencial de cada rajada (Rajada 1, 2, 3...). Guarda sempre as coordenadas exatas de cada tiro e o respetivo resultado (Água, Navio atingido, Navio afundado, etc.) para consultares sempre que precisares.
+- **Sem desperdícios:** Não dispares para fora do tabuleiro nem repites tiros em sítios onde já tentaste a tua sorte. A única exceção é na última jogada do jogo, estritamente para cumprir os 3 tiros obrigatórios quando a frota adversária já estiver toda no fundo do mar.
+- **Caça ao navio:** Se acertares num navio, na jogada seguinte foca os teus disparos nas posições vizinhas (Norte, Sul, Este, Oeste) para perceberes a orientação dele e mandá-lo a pique. Se o relatório da jogada anterior já confirmar que o navio afundou, nem vale a pena disparar para aí, porque os navios nunca estão encostados.
+- **Regra das diagonais:** Como as Caravelas, Naus e Fragatas são sempre a direito, um tiro certeiro indica-te que o resto do navio está na horizontal ou vertical. E como os navios não se podem tocar (nem de canto), as posições na diagonal de um tiro certeiro são garantidamente água (à exceção do corpo em T do Galeão). Evitar essas diagonais vai poupar-te muitos tiros.
+- **Perímetro de segurança:** Assim que um navio for dado como afundado, olha para o teu diário de bordo, descobre exatamente onde caíram os tiros e descarta toda a volta (o halo de 1 posição) como água. É fisicamente impossível haver outro barco colado ali.
+- **Atitude:** Se a tua frota for toda afundada, assume a derrota de cabeça erguida. Se fores tu a vencer, sê elegante quando o oponente se render com os navios no fundo do oceano.
 
 ## 🤝 Contributing
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create.
