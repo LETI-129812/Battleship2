@@ -17,6 +17,7 @@
 - [Roadmap](#-roadmap)
 - [Prompt](#-prompt)
 - [Contributing](#-contributing)
+- [Nota Final](#-nota-final)
 
 ---
 
@@ -159,3 +160,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
+
+## Nota final
+O link correto da page é https://leti-129812.github.io/Battleship2/apidocs/index.html
