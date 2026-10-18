@@ -185,8 +185,6 @@ public class Move implements IMove {
 
 		// Serializar o JSON utilizando Jackson
 		String jsonString;
-
-		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -196,8 +194,8 @@ public class Move implements IMove {
 			throw new RuntimeException("Erro ao serializar o JSON dos resultados da jogada", e);
 		}
 
+		// O guião exige imprimir a string JSON construída:
 		System.out.println(jsonString);
-		System.out.println();
 
 		// Retornar o JSON
 		return jsonString;
