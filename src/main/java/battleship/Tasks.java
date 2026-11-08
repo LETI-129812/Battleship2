@@ -226,8 +226,5 @@ public class Tasks {
 			throw new IllegalArgumentException("Formato inválido. Use 'A3', 'A 3' ou similar.");
 		}
 	}
-	public static void cheiroTeste(int a, int b, int c, int d, int e, int f, int g, int h, int i) {
-
-	}
 
 }
