@@ -38,30 +38,4 @@ public class Caravel extends Ship {
 				break;
 		}
 	}
-	public void metodoGigante() {
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-		System.out.println("teste");
-	}
 }
