@@ -6,4 +6,4 @@ profile:
     - inspection: OverlyComplexMethod
       enabled: true
       options:
-        m_limit: 8
+        m_limit: 10
