@@ -2,7 +2,7 @@
 name: "profile-129759"
 baseProfile: empty
 inspections:
-  - inspection: MethodWithTooManyParameters
+  - inspection: ParametersPerMethod
     enabled: true
     severity: WARNING
     options:
