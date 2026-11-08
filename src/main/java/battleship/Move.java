@@ -10,8 +10,8 @@ import java.util.*;
  * Shot
  *
  * @author Your Name
- * Date: 20/02/2026
- * Time: 19:39
+ * @date: 20/02/2026
+ * @time: 19:39
  */
 public class Move implements IMove {
 
@@ -86,6 +86,7 @@ public class Move implements IMove {
 			}
 		}
 
+		// CORRIGIDO: Adicionado o operador de subtração (-) que faltava
 		int outsideShots = Game.NUMBER_SHOTS - validShots - repeatedShots;
 
 		if (verbose) {
@@ -94,6 +95,7 @@ public class Move implements IMove {
 
 		return generateJsonResponse(validShots, repeatedShots, missedShots, outsideShots, sunkBoatsCount, hitsPerBoat);
 	}
+
 	private void printVerboseResult(int validShots, int repeatedShots, int missedShots, int outsideShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
 		StringBuilder output = new StringBuilder();
 
@@ -130,7 +132,7 @@ public class Move implements IMove {
 			output.append(outsideShots).append(outsideShots > 1 ? " tiros exteriores" : " tiro exterior");
 		}
 
-		System.out.println("Jogada -> " + output);
+		System.out.println("Jogada nº" + this.number + " -> " + output);
 	}
 
 	private String generateJsonResponse(int validShots, int repeatedShots, int missedShots, int outsideShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
@@ -140,16 +142,23 @@ public class Move implements IMove {
 		response.put("repeatedShots", repeatedShots);
 		response.put("missedShots", missedShots);
 
+		// CORRIGIDO: Utilização de HashMap seguro em vez de Map.of()
 		List<Map<String, Object>> sunkBoats = new ArrayList<>();
 		for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
-			sunkBoats.add(Map.of("type", entry.getKey(), "count", entry.getValue()));
+			Map<String, Object> boat = new HashMap<>();
+			boat.put("type", entry.getKey());
+			boat.put("count", entry.getValue());
+			sunkBoats.add(boat);
 		}
 		response.put("sunkBoats", sunkBoats);
 
 		List<Map<String, Object>> boatHits = new ArrayList<>();
 		for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
 			if (!sunkBoatsCount.containsKey(entry.getKey())) {
-				boatHits.add(Map.of("type", entry.getKey(), "hits", entry.getValue()));
+				Map<String, Object> boat = new HashMap<>();
+				boat.put("type", entry.getKey());
+				boat.put("hits", entry.getValue());
+				boatHits.add(boat);
 			}
 		}
 		response.put("hitsOnBoats", boatHits);
@@ -163,5 +172,4 @@ public class Move implements IMove {
 			throw new RuntimeException("Erro ao serializar JSON", e);
 		}
 	}
-
 }
