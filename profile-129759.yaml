@@ -1,0 +1,9 @@
+# 12345 - Nome do Aluno
+profile:
+  base:
+    name: empty
+inspections:
+  - inspection: MethodWithTooManyParameters
+    enabled: true
+    options:
+      m_limit: 5
