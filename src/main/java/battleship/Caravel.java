@@ -176,6 +176,7 @@ public class Caravel extends Ship {
 			System.out.println("teste");
 			System.out.println("teste");
 			System.out.println("teste");
+			System.out.println("teste");
 
 		}
 	}
