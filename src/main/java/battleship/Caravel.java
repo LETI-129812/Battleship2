@@ -37,5 +37,5 @@ public class Caravel extends Ship {
 					getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
 				break;
 		}
-	}
+	}// Comentário de teste para acionar o Qodana
 }
