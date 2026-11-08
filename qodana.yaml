@@ -25,3 +25,6 @@ linter: jetbrains/qodana-jvm:2025.1
 include:
   - name: UNUSED_IMPORT
   - name: FieldMayBeFinal
+  - name: ParametersPerMethod
+    options:
+      limit: 3
