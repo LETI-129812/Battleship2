@@ -1,7 +1,6 @@
 # 129759 - Rodrigo Alves
-profile:
-  base:
-    name: empty
+name: "profile-129759"
+baseProfile: empty
 inspections:
   - inspection: MethodWithTooManyParameters
     enabled: true
