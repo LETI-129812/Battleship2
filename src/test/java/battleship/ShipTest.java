@@ -236,6 +236,217 @@ public class ShipTest {
         assertEquals(8, ship.getAdjacentPositions().size(), "Error: The number of adjacent positions of a barge in the middle of the tray should be 8.");
         assertEquals(3, shipBorder.getAdjacentPositions().size(), "Error: The number of adjacent positions of a barge in the middle of the tray should be 8.");
     }
+    // ---------- buildShip ----------
+
+    @Test
+    @DisplayName("buildShip cria uma Barge para 'barca'")
+    void testBuildShipBarge() {
+        Ship s = Ship.buildShip("barca", Compass.NORTH, new Position(1, 1));
+        assertInstanceOf(Barge.class, s);
+        assertEquals(Compass.NORTH, s.getBearing());
+    }
+
+    @Test
+    @DisplayName("buildShip cria uma Caravel para 'caravela'")
+    void testBuildShipCaravel() {
+        assertInstanceOf(Caravel.class, Ship.buildShip("caravela", Compass.NORTH, new Position(1, 1)));
+    }
+
+    @Test
+    @DisplayName("buildShip cria uma Carrack para 'nau'")
+    void testBuildShipCarrack() {
+        assertInstanceOf(Carrack.class, Ship.buildShip("nau", Compass.NORTH, new Position(1, 1)));
+    }
+
+    @Test
+    @DisplayName("buildShip cria uma Frigate para 'fragata'")
+    void testBuildShipFrigate() {
+        Ship s = Ship.buildShip("fragata", Compass.EAST, new Position(1, 1));
+        assertInstanceOf(Frigate.class, s);
+        assertEquals(Compass.EAST, s.getBearing());
+    }
+
+    @Test
+    @DisplayName("buildShip cria uma Galleon para 'galeao'")
+    void testBuildShipGalleon() {
+        assertInstanceOf(Galleon.class, Ship.buildShip("galeao", Compass.NORTH, new Position(1, 1)));
+    }
+
+    @Test
+    @DisplayName("buildShip devolve null para um tipo de navio desconhecido")
+    void testBuildShipUnknownKind() {
+        assertNull(Ship.buildShip("submarino", Compass.NORTH, new Position(1, 1)));
+    }
+
+    // ---------- isInsideBoard ----------
+
+    @Test
+    @DisplayName("isInsideBoard é verdadeiro para um navio no meio do tabuleiro")
+    void testIsInsideBoardMiddle() {
+        assertTrue(ship.isInsideBoard());
+    }
+
+    @Test
+    @DisplayName("isInsideBoard é verdadeiro nos cantos do tabuleiro")
+    void testIsInsideBoardCorners() {
+        assertTrue(shipBorder.isInsideBoard());
+        assertTrue(new Barge(Compass.NORTH, new Position(Game.BOARD_SIZE - 1, Game.BOARD_SIZE - 1)).isInsideBoard());
+    }
+
+    @Test
+    @DisplayName("isInsideBoard é falso se o navio sai pela esquerda")
+    void testIsInsideBoardOutsideLeft() {
+        assertFalse(new Barge(Compass.NORTH, new Position(5, -1)).isInsideBoard());
+    }
+
+    @Test
+    @DisplayName("isInsideBoard é falso se o navio sai pela direita")
+    void testIsInsideBoardOutsideRight() {
+        assertFalse(new Barge(Compass.NORTH, new Position(5, Game.BOARD_SIZE)).isInsideBoard());
+    }
+
+    @Test
+    @DisplayName("isInsideBoard é falso se o navio sai por cima")
+    void testIsInsideBoardOutsideTop() {
+        assertFalse(new Barge(Compass.NORTH, new Position(-1, 5)).isInsideBoard());
+    }
+
+    @Test
+    @DisplayName("isInsideBoard é falso se o navio sai por baixo")
+    void testIsInsideBoardOutsideBottom() {
+        assertFalse(new Barge(Compass.NORTH, new Position(Game.BOARD_SIZE, 5)).isInsideBoard());
+    }
+
+    @Test
+    @DisplayName("isInsideBoard é falso se só parte de um navio grande sai do tabuleiro")
+    void testIsInsideBoardLargeShipPartlyOutside() {
+        Frigate frigate = new Frigate(Compass.NORTH, new Position(Game.BOARD_SIZE - 2, 5));
+        assertFalse(frigate.isInsideBoard());
+    }
+
+    // ---------- sink, shoot, getPosition, toString, getAdjacentPositions ----------
+
+    @Test
+    @DisplayName("sink marca todas as posições como atingidas e o navio deixa de flutuar")
+    void testSink() {
+        Frigate frigate = new Frigate(Compass.NORTH, new Position(2, 2));
+        assertTrue(frigate.stillFloating());
+
+        frigate.sink();
+
+        assertFalse(frigate.stillFloating());
+        assertTrue(frigate.getPositions().stream().allMatch(IPosition::isHit));
+    }
+
+    @Test
+    @DisplayName("shoot num navio grande só atinge a posição visada")
+    void testShootOnlyHitsTargetPosition() {
+        Frigate frigate = new Frigate(Compass.NORTH, new Position(2, 2));
+
+        frigate.shoot(new Position(3, 2));
+
+        assertFalse(frigate.getPositions().get(0).isHit());
+        assertTrue(frigate.getPositions().get(1).isHit());
+        assertFalse(frigate.getPositions().get(2).isHit());
+        assertFalse(frigate.getPositions().get(3).isHit());
+        assertTrue(frigate.stillFloating());
+    }
+
+    @Test
+    @DisplayName("getPosition devolve a posição inicial do navio")
+    void testGetPosition() {
+        assertEquals(new Position(5, 5), ship.getPosition());
+    }
+
+    @Test
+    @DisplayName("toString inclui a categoria e a posição do navio")
+    void testToString() {
+        String text = ship.toString();
+        assertTrue(text.contains("Barca"), "toString deve conter a categoria");
+        assertTrue(text.contains("F6"), "toString deve conter a posição (linha F, coluna 6)");
+    }
+
+    @Test
+    @DisplayName("getAdjacentPositions de uma fragata vertical no tabuleiro devolve 14 posições sem repetidas")
+    void testGetAdjacentPositionsOfLargeShip() {
+        Frigate frigate = new Frigate(Compass.NORTH, new Position(2, 5));
+        List<IPosition> adjacents = frigate.getAdjacentPositions();
+
+        assertEquals(14, adjacents.size());
+        assertEquals(14, adjacents.stream().distinct().count(), "Não pode haver posições repetidas");
+        frigate.getPositions().forEach(p -> assertFalse(adjacents.contains(p)));
+    }
+
+    // ---------- construtor com valores nulos ----------
+
+    @Test
+    @DisplayName("Construtor lança NullPointerException se a orientação for nula")
+    void testConstructorNullBearing() {
+        assertThrows(NullPointerException.class, () -> new Barge(null, new Position(0, 0)));
+    }
+
+    @Test
+    @DisplayName("Construtor lança NullPointerException se a posição for nula")
+    void testConstructorNullPosition() {
+        assertThrows(NullPointerException.class, () -> new Barge(Compass.NORTH, null));
+    }
+    @Test
+    @DisplayName("buildShip falha com AssertionError se o tipo for nulo")
+    void testBuildShipNullKind() {
+        assertThrows(AssertionError.class, () -> Ship.buildShip(null, Compass.NORTH, new Position(1, 1)));
+    }
+
+    @Test
+    @DisplayName("buildShip falha com AssertionError se a orientação for nula")
+    void testBuildShipNullBearing() {
+        assertThrows(AssertionError.class, () -> Ship.buildShip("barca", null, new Position(1, 1)));
+    }
+
+    @Test
+    @DisplayName("buildShip falha com AssertionError se a posição for nula")
+    void testBuildShipNullPosition() {
+        assertThrows(AssertionError.class, () -> Ship.buildShip("barca", Compass.NORTH, null));
+    }
+
+    @Test
+    @DisplayName("occupies falha com AssertionError se a posição for nula")
+    void testOccupiesNull() {
+        assertThrows(AssertionError.class, () -> ship.occupies(null));
+    }
+
+    @Test
+    @DisplayName("tooCloseTo(IShip) falha com AssertionError se o navio for nulo")
+    void testTooCloseToNullShip() {
+        assertThrows(AssertionError.class, () -> ship.tooCloseTo((IShip) null));
+    }
+
+    @Test
+    @DisplayName("tooCloseTo(IPosition) falha com AssertionError se a posição for nula")
+    void testTooCloseToNullPosition() {
+        assertThrows(AssertionError.class, () -> ship.tooCloseTo((IPosition) null));
+    }
+
+    @Test
+    @DisplayName("shoot falha com AssertionError se a posição for nula")
+    void testShootNull() {
+        assertThrows(AssertionError.class, () -> ship.shoot(null));
+    }
+
+    @Test
+    @DisplayName("shoot falha com AssertionError se a posição estiver fora do tabuleiro")
+    void testShootOutsideBoard() {
+        assertThrows(AssertionError.class, () -> ship.shoot(new Position(-1, -1)));
+    }
+    @Test
+    @DisplayName("isInsideBoard e limites funcionam para um navio grande nas 4 orientações")
+    void testLargeShipAllBearings() {
+        for (Compass bearing : Compass.values()) {
+            Frigate f = new Frigate(bearing, new Position(5, 5));
+            assertTrue(f.isInsideBoard());
+            assertTrue(f.getTopMostPos() <= f.getBottomMostPos());
+            assertTrue(f.getLeftMostPos() <= f.getRightMostPos());
+        }
+    }
 
 
 }
