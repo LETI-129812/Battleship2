@@ -2,6 +2,7 @@ package battleship;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 /**
  * Test class for Position.
@@ -181,5 +182,64 @@ public class PositionTest {
 		assertEquals(expected, position.toString(),
 				"Incorrect string representation: expected '" + expected +
 						"' but got '" + position.toString() + "'");
+	}
+	@Test
+	@DisplayName("Construtor (char, int) converte a linha 'C' e a coluna 4 em (2, 3)")
+	void constructorWithClassicCoordinates() {
+		Position pos = new Position('C', 4);
+
+		assertEquals(2, pos.getRow());
+		assertEquals(3, pos.getColumn());
+		assertEquals(new Position(2, 3), pos);
+	}
+
+	@Test
+	@DisplayName("Construtor (char, int) aceita a linha em minúscula")
+	void constructorWithLowercaseClassicRow() {
+		assertEquals(new Position('C', 4), new Position('c', 4));
+	}
+
+	@Test
+	@DisplayName("getClassicColumn devolve a coluna na numeração de 1 a 10")
+	void getClassicColumnIsOneBased() {
+		assertEquals(4, position.getClassicColumn());
+	}
+
+	@Test
+	@DisplayName("randomPosition devolve sempre uma posição dentro do tabuleiro")
+	void randomPositionIsInsideBoard() {
+		for (int i = 0; i < 200; i++) {
+			Position pos = Position.randomPosition();
+			assertNotNull(pos);
+			assertTrue(pos.isInside(), "randomPosition devolveu uma posição fora do tabuleiro: " + pos);
+		}
+	}
+
+	@Test
+	@DisplayName("adjacentPositions no centro do tabuleiro devolve 8 posições")
+	void adjacentPositionsInTheMiddle() {
+		List<IPosition> adjacents = new Position(5, 5).adjacentPositions();
+
+		assertEquals(8, adjacents.size());
+		assertFalse(adjacents.contains(new Position(5, 5)), "A própria posição não é adjacente");
+		assertTrue(adjacents.contains(new Position(4, 4)));
+		assertTrue(adjacents.contains(new Position(6, 6)));
+	}
+
+	@Test
+	@DisplayName("adjacentPositions num canto devolve só as 3 posições dentro do tabuleiro")
+	void adjacentPositionsInACorner() {
+		List<IPosition> adjacents = new Position(0, 0).adjacentPositions();
+
+		assertEquals(3, adjacents.size());
+		assertTrue(adjacents.contains(new Position(0, 1)));
+		assertTrue(adjacents.contains(new Position(1, 0)));
+		assertTrue(adjacents.contains(new Position(1, 1)));
+	}
+
+	@Test
+	@DisplayName("adjacentPositions numa borda devolve 5 posições")
+	void adjacentPositionsOnAnEdge() {
+		assertEquals(5, new Position(0, 5).adjacentPositions().size());
 	}
 }
