@@ -312,7 +312,7 @@ public abstract class Ship implements IShip
 	/**
 	 * Occupies boolean.
 	 *
-	 * @param pos the pos
+	 * @param position the pos
 	 * @return the boolean
 	 */
 	/*
@@ -321,12 +321,12 @@ public abstract class Ship implements IShip
      * @see battleship.IShip#occupies(battleship.IPosition)
      */
     @Override
-    public boolean occupies(IPosition pos)
+    public boolean occupies(IPosition position)
     {
-		assert pos != null;
+		assert position != null;
 
 		for (int i = 0; i < getSize(); i++)
-			if (getPositions().get(i).equals(pos))
+			if (getPositions().get(i).equals(position))
 				return true;
 		return false;
     }
