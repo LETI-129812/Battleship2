@@ -382,9 +382,14 @@ public abstract class Ship implements IShip
 
 
 		int maxIndex = Game.BOARD_SIZE - 1;
-		return (getLeftMostPos() >= 0 && getRightMostPos() <= maxIndex && getTopMostPos() >= 0
-				&& getBottomMostPos() <= maxIndex);
+		return isWithinBounds(maxIndex);
 	}
+
+	private boolean isWithinBounds(int maxIndex) {
+		return getLeftMostPos() >= 0 && getRightMostPos() <= maxIndex && getTopMostPos() >= 0
+				&& getBottomMostPos() <= maxIndex;
+	}
+
 	/**
 	 * Shoot.
 	 *
