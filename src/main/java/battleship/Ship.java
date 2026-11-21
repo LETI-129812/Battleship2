@@ -33,6 +33,7 @@ public abstract class Ship implements IShip
 	 * The constant BARCA.
 	 */
 	private static final String BARCA = "barca";
+	public static final String SHIP_S_CATEGORY_MUST_NOT_BE_NULL = "Ship's category must not be null";
 
 	/**
 	 * Create a new ship
@@ -109,7 +110,7 @@ public abstract class Ship implements IShip
 	 */
 	public Ship(String category, Compass bearing, IPosition pos, int size)
     {
-		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
+		this.category = Objects.requireNonNull(category, SHIP_S_CATEGORY_MUST_NOT_BE_NULL);
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
 		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
 	
@@ -379,7 +380,7 @@ public abstract class Ship implements IShip
 
 	public boolean isInsideBoard()
 	{
-		assert this != null;
+
 
 		return (getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1 && getTopMostPos() >= 0
 				&& getBottomMostPos() <= Game.BOARD_SIZE - 1);
