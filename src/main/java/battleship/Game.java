@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.lang3.time.StopWatch;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class Game implements IGame {
@@ -75,12 +73,7 @@ public class Game implements IGame {
 	}
 
 	private static void printBoardFrame(char[][] map) {
-		System.out.println();
-		System.out.print("    ");
-		for (int col = 0; col < BOARD_SIZE; col++) {
-			System.out.print(" " + (col + 1));
-		}
-		System.out.println();
+		printColumnNumbers();
 
 		System.out.print("   +-");
 		for (int col = 0; col < BOARD_SIZE; col++) {
@@ -101,6 +94,15 @@ public class Game implements IGame {
 		for (int col = 0; col < BOARD_SIZE; col++)
 			System.out.print("--");
 		System.out.println("-+");
+	}
+
+	private static void printColumnNumbers() {
+		System.out.println();
+		System.out.print("    ");
+		for (int col = 0; col < BOARD_SIZE; col++) {
+			System.out.print(" " + (col + 1));
+		}
+		System.out.println();
 	}
 
 	/**
@@ -143,61 +145,6 @@ public class Game implements IGame {
 		return jsonString;
 	}
 
-	// ==========================================
-	// SCOREBOARD (Jackson)
-	// ==========================================
-	private static final String SCORE_FILE = "scoreboard_local.json";
-
-	public static class ScoreRecord {
-		private String player;
-		private int points;
-
-		public ScoreRecord() {
-		}
-
-		public ScoreRecord(String player, int points) {
-			this.player = player;
-			this.points = points;
-		}
-
-		public String getPlayer() {
-			return player;
-		}
-
-		public int getPoints() {
-			return points;
-		}
-
-		@Override
-		public String toString() {
-			return player + " - " + points + " pts";
-		}
-	}
-
-	public static void saveScore(String player, int points) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-		List<ScoreRecord> scores = loadScores();
-		scores.add(new ScoreRecord(player, points));
-		try {
-			mapper.writeValue(new File(SCORE_FILE), scores);
-		} catch (IOException e) {
-			System.err.println("Erro ao guardar o scoreboard: " + e.getMessage());
-		}
-	}
-
-	public static List<ScoreRecord> loadScores() {
-		ObjectMapper mapper = new ObjectMapper();
-		File file = new File(SCORE_FILE);
-		if (!file.exists()) {
-			return new ArrayList<>();
-		}
-		try {
-			return mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, ScoreRecord.class));
-		} catch (IOException e) {
-			return new ArrayList<>();
-		}
-	}
 	// ==========================================
 
 	//------------------------------------------------------------------
@@ -431,11 +378,12 @@ public class Game implements IGame {
 		} else {
 			ship.shoot(pos);
 			countHits++;
-			if (!ship.stillFloating()) {
+			boolean sunk = !ship.stillFloating();
+			if (sunk) {
 				countSinks++;
 			}
 			BD.guardarJogada(pos, "Barco");
-			return new ShotResult(true, false, ship, !ship.stillFloating());
+			return new ShotResult(true, false, ship, sunk);
 		}
 	}
 
@@ -461,8 +409,7 @@ public class Game implements IGame {
 
 	@Override
 	public int getRemainingShips() {
-		List<IShip> floatingShips = myFleet.getFloatingShips();
-		return floatingShips.size();
+        return myFleet.getFloatingShips().size();
 	}
 
 	public boolean repeatedShot(IPosition pos) {
@@ -511,12 +458,12 @@ public class Game implements IGame {
 		}
 
 		// 3. Guardar no ficheiro JSON
-		saveScore(playerName, pontos);
+		ScoreBoard.saveScore(playerName, pontos);
 
 		// 4. Imprimir a tabela na consola
 		System.out.println("\n=== TABELA DE PONTUAÇÕES ===");
-		List<ScoreRecord> scores = loadScores();
-		for (ScoreRecord record : scores) {
+		List<ScoreBoard.ScoreRecord> scores = ScoreBoard.loadScores();
+		for (ScoreBoard.ScoreRecord record : scores) {
 			System.out.println(record);
 		}
 
