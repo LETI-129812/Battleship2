@@ -33,6 +33,7 @@ public abstract class Ship implements IShip
 	 * The constant BARCA.
 	 */
 	private static final String BARCA = "barca";
+	public static final String SHIP_S_CATEGORY_MUST_NOT_BE_NULL = "Ship's category must not be null";
 
 	/**
 	 * Create a new ship
@@ -109,7 +110,7 @@ public abstract class Ship implements IShip
 	 */
 	public Ship(String category, Compass bearing, IPosition pos, int size)
     {
-		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
+		this.category = Objects.requireNonNull(category, SHIP_S_CATEGORY_MUST_NOT_BE_NULL);
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
 		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
 	
@@ -159,8 +160,7 @@ public abstract class Ship implements IShip
 		List<IPosition> adjacentPositions = new ArrayList<IPosition>();
 		for (IPosition position : getPositions())
 		{
-			List<IPosition> adjacents = position.adjacentPositions();
-			for (IPosition adj : adjacents)
+            for (IPosition adj : position.adjacentPositions())
 				if (!getPositions().contains(adj) && !adjacentPositions.contains(adj))
 					adjacentPositions.add(adj);
 		}
@@ -312,7 +312,7 @@ public abstract class Ship implements IShip
 	/**
 	 * Occupies boolean.
 	 *
-	 * @param pos the pos
+	 * @param position the pos
 	 * @return the boolean
 	 */
 	/*
@@ -321,12 +321,12 @@ public abstract class Ship implements IShip
      * @see battleship.IShip#occupies(battleship.IPosition)
      */
     @Override
-    public boolean occupies(IPosition pos)
+    public boolean occupies(IPosition position)
     {
-		assert pos != null;
+		assert position != null;
 
 		for (int i = 0; i < getSize(); i++)
-			if (getPositions().get(i).equals(pos))
+			if (getPositions().get(i).equals(position))
 				return true;
 		return false;
     }
@@ -379,11 +379,17 @@ public abstract class Ship implements IShip
 
 	public boolean isInsideBoard()
 	{
-		assert this != null;
 
-		return (getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1 && getTopMostPos() >= 0
-				&& getBottomMostPos() <= Game.BOARD_SIZE - 1);
+
+		int maxIndex = Game.BOARD_SIZE - 1;
+		return isWithinBounds(maxIndex);
 	}
+
+	private boolean isWithinBounds(int maxIndex) {
+		return getLeftMostPos() >= 0 && getRightMostPos() <= maxIndex && getTopMostPos() >= 0
+				&& getBottomMostPos() <= maxIndex;
+	}
+
 	/**
 	 * Shoot.
 	 *
