@@ -10,6 +10,8 @@ package battleship;
  */
 public class Caravel extends Ship {
 
+	public static final int SIZE = 2;
+
 	/**
 	 * Instantiates a new Caravel.
 	 *
@@ -17,7 +19,7 @@ public class Caravel extends Ship {
 	 * @param pos     The initial position of the ship on the game board.
 	 */
 	public Caravel(Compass bearing, IPosition pos) {
-		super("Caravela", bearing, pos, 2);
+		super("Caravela", bearing, pos, SIZE);
 
 		switch (bearing) {
 			case NORTH:
