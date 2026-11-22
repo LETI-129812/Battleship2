@@ -102,37 +102,45 @@ public class Move implements IMove {
 		if (validShots == 0 && repeatedShots > 0) {
 			output.append(repeatedShots).append(repeatedShots > 1 ? " tiros repetidos" : " tiro repetido");
 		} else if (validShots > 0) {
-			output.append(validShots).append(validShots > 1 ? " tiros válidos: " : " tiro válido: ");
+			appendValidShotsSummary(output, validShots, repeatedShots, missedShots, sunkBoatsCount, hitsPerBoat);
+		}
 
-			for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
-				int count = entry.getValue();
-				output.append(count).append(" ").append(entry.getKey()).append(count > 1 ? "s ao fundo + " : " ao fundo + ");
-			}
+		appendOutsideShots(output, outsideShots);
 
-			for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
-				if (!sunkBoatsCount.containsKey(entry.getKey())) {
-					int hits = entry.getValue();
-					output.append(hits).append(hits > 1 ? " tiros num(a) " : " tiro num(a) ").append(entry.getKey()).append(" + ");
-				}
-			}
+		System.out.println("Jogada nº" + this.number + " -> " + output);
+	}
 
-			if (missedShots > 0) {
-				output.append(missedShots).append(missedShots > 1 ? " tiros na água" : " tiro na água");
-			} else if (!sunkBoatsCount.isEmpty() || !hitsPerBoat.isEmpty()) {
-				output.setLength(output.length() - 2);
-			}
+	private void appendValidShotsSummary(StringBuilder output, int validShots, int repeatedShots, int missedShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
+		output.append(validShots).append(validShots > 1 ? " tiros válidos: " : " tiro válido: ");
 
-			if (repeatedShots > 0) {
-				output.append(", ").append(repeatedShots).append(repeatedShots > 1 ? " tiros repetidos" : " tiro repetido");
+		for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
+			int count = entry.getValue();
+			output.append(count).append(" ").append(entry.getKey()).append(count > 1 ? "s ao fundo + " : " ao fundo + ");
+		}
+
+		for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
+			if (!sunkBoatsCount.containsKey(entry.getKey())) {
+				int hits = entry.getValue();
+				output.append(hits).append(hits > 1 ? " tiros num(a) " : " tiro num(a) ").append(entry.getKey()).append(" + ");
 			}
 		}
 
+		if (missedShots > 0) {
+			output.append(missedShots).append(missedShots > 1 ? " tiros na água" : " tiro na água");
+		} else if (!sunkBoatsCount.isEmpty() || !hitsPerBoat.isEmpty()) {
+			output.setLength(output.length() - 2);
+		}
+
+		if (repeatedShots > 0) {
+			output.append(", ").append(repeatedShots).append(repeatedShots > 1 ? " tiros repetidos" : " tiro repetido");
+		}
+	}
+
+	private void appendOutsideShots(StringBuilder output, int outsideShots) {
 		if (outsideShots > 0) {
 			if (!output.isEmpty()) output.append(", ");
 			output.append(outsideShots).append(outsideShots > 1 ? " tiros exteriores" : " tiro exterior");
 		}
-
-		System.out.println("Jogada nº" + this.number + " -> " + output);
 	}
 
 	private String generateJsonResponse(int validShots, int repeatedShots, int missedShots, int outsideShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
