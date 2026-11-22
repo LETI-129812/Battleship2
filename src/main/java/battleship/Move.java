@@ -102,74 +102,102 @@ public class Move implements IMove {
 		if (validShots == 0 && repeatedShots > 0) {
 			output.append(repeatedShots).append(repeatedShots > 1 ? " tiros repetidos" : " tiro repetido");
 		} else if (validShots > 0) {
-			output.append(validShots).append(validShots > 1 ? " tiros válidos: " : " tiro válido: ");
-
-			for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
-				int count = entry.getValue();
-				output.append(count).append(" ").append(entry.getKey()).append(count > 1 ? "s ao fundo + " : " ao fundo + ");
-			}
-
-			for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
-				if (!sunkBoatsCount.containsKey(entry.getKey())) {
-					int hits = entry.getValue();
-					output.append(hits).append(hits > 1 ? " tiros num(a) " : " tiro num(a) ").append(entry.getKey()).append(" + ");
-				}
-			}
-
-			if (missedShots > 0) {
-				output.append(missedShots).append(missedShots > 1 ? " tiros na água" : " tiro na água");
-			} else if (!sunkBoatsCount.isEmpty() || !hitsPerBoat.isEmpty()) {
-				output.setLength(output.length() - 2);
-			}
-
-			if (repeatedShots > 0) {
-				output.append(", ").append(repeatedShots).append(repeatedShots > 1 ? " tiros repetidos" : " tiro repetido");
-			}
+			appendValidShotsSummary(output, validShots, repeatedShots, missedShots, sunkBoatsCount, hitsPerBoat);
 		}
 
-		if (outsideShots > 0) {
-			if (!output.isEmpty()) output.append(", ");
-			output.append(outsideShots).append(outsideShots > 1 ? " tiros exteriores" : " tiro exterior");
-		}
+		appendOutsideShots(output, outsideShots);
 
 		System.out.println("Jogada nº" + this.number + " -> " + output);
 	}
 
-	private String generateJsonResponse(int validShots, int repeatedShots, int missedShots, int outsideShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
-		Map<String, Object> response = new HashMap<>();
-		response.put("validShots", validShots);
-		response.put("outsideShots", outsideShots);
-		response.put("repeatedShots", repeatedShots);
-		response.put("missedShots", missedShots);
+	private void appendValidShotsSummary(StringBuilder output, int validShots, int repeatedShots, int missedShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
+		output.append(validShots).append(validShots > 1 ? " tiros válidos: " : " tiro válido: ");
 
-		// CORRIGIDO: Utilização de HashMap seguro em vez de Map.of()
-		List<Map<String, Object>> sunkBoats = new ArrayList<>();
 		for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
-			Map<String, Object> boat = new HashMap<>();
-			boat.put("type", entry.getKey());
-			boat.put("count", entry.getValue());
-			sunkBoats.add(boat);
+			int count = entry.getValue();
+			output.append(count).append(" ").append(entry.getKey()).append(count > 1 ? "s ao fundo + " : " ao fundo + ");
 		}
-		response.put("sunkBoats", sunkBoats);
 
-		List<Map<String, Object>> boatHits = new ArrayList<>();
 		for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
 			if (!sunkBoatsCount.containsKey(entry.getKey())) {
-				Map<String, Object> boat = new HashMap<>();
-				boat.put("type", entry.getKey());
-				boat.put("hits", entry.getValue());
-				boatHits.add(boat);
+				int hits = entry.getValue();
+				output.append(hits).append(hits > 1 ? " tiros num(a) " : " tiro num(a) ").append(entry.getKey()).append(" + ");
 			}
 		}
-		response.put("hitsOnBoats", boatHits);
+
+		if (missedShots > 0) {
+			output.append(missedShots).append(missedShots > 1 ? " tiros na água" : " tiro na água");
+		} else if (!sunkBoatsCount.isEmpty() || !hitsPerBoat.isEmpty()) {
+			output.setLength(output.length() - 2);
+		}
+
+		if (repeatedShots > 0) {
+			output.append(", ").append(repeatedShots).append(repeatedShots > 1 ? " tiros repetidos" : " tiro repetido");
+		}
+	}
+
+	private void appendOutsideShots(StringBuilder output, int outsideShots) {
+		if (outsideShots > 0) {
+			if (!output.isEmpty()) output.append(", ");
+			output.append(outsideShots).append(outsideShots > 1 ? " tiros exteriores" : " tiro exterior");
+		}
+	}
+
+
+	private String generateJsonResponse(
+			int validShots,
+			int repeatedShots,
+			int missedShots,
+			int outsideShots,
+			Map<String, Integer> sunkBoatsCount,
+			Map<String, Integer> hitsPerBoat) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		response.put("validShots", validShots);
+		response.put("repeatedShots", repeatedShots);
+		response.put("missedShots", missedShots);
+		response.put("outsideShots", outsideShots);
+		response.put("sunkBoats", buildBoatList(sunkBoatsCount, "count"));
+		response.put("hitsOnBoats", buildUnsunkBoatList(sunkBoatsCount, hitsPerBoat));
 
 		try {
-			ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-			String jsonString = objectMapper.writeValueAsString(response);
-			System.out.println(jsonString);
-			return jsonString;
+			ObjectMapper mapper = new ObjectMapper()
+					.enable(SerializationFeature.INDENT_OUTPUT);
+
+			String json = mapper.writeValueAsString(response);
+			System.out.println(json);
+
+			return json;
+
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Erro ao serializar JSON", e);
 		}
 	}
+
+	private List<Map<String, Object>> buildBoatList(
+			Map<String, Integer> boats, String valueKey) {
+
+		List<Map<String, Object>> result = new ArrayList<>();
+
+		for (Map.Entry<String, Integer> entry : boats.entrySet()) {
+			Map<String, Object> boat = new HashMap<>();
+			boat.put("type", entry.getKey());
+			boat.put(valueKey, entry.getValue());
+			result.add(boat);
+		}
+
+		return result;
+	}
+
+	private List<Map<String, Object>> buildUnsunkBoatList(
+			Map<String, Integer> sunkBoats,
+			Map<String, Integer> hitsPerBoat) {
+
+		Map<String, Integer> unsunkBoats = new HashMap<>(hitsPerBoat);
+		unsunkBoats.keySet().removeAll(sunkBoats.keySet());
+
+		return buildBoatList(unsunkBoats, "hits ");
+	}
+
 }

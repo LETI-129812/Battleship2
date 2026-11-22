@@ -10,3 +10,6 @@
 | `Game::getRemainingShips` | Unnecessary Local Variable (`floatingShips`) | Inline Variable | 129812 |
 | `Game::saveScore` | Large Class | Move Members | 129812 |
 | `Game::printBoardFrame` | Long Method | Extract Method | 129812 |
+| `Move::Move` | Inconsistent Naming (parâmetros `moveShots`/`moveResults` vs campos `shots`/`shotResults`) | Rename | 129811 |
+| `Move::printVerboseResult`, `Move::generateJsonResponse` | Long Parameter List (6 parâmetros) | Introduce Parameter Object | 129811 |
+| `Move::printVerboseResult` | Long Method | Extract Method | 129811 |
