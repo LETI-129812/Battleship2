@@ -12,7 +12,7 @@ public class ScoreBoard {
     // ==========================================
     // SCOREBOARD (Jackson)
     // ==========================================
-    private static final String SCORE_FILE = "scoreboard.json";
+    private static final String SCORE_FILE = "scoreboard_local.json";
 
     public static void saveScore(String player, int points) {
         ObjectMapper mapper = new ObjectMapper();

@@ -277,7 +277,7 @@ public class GameTest {
 	@Test
 	@DisplayName("Score record constructor and getters")
 	void scoreRecordTest() {
-		Game.ScoreRecord record = new Game.ScoreRecord("Capitão", 500);
+		ScoreBoard.ScoreRecord record = new ScoreBoard.ScoreRecord("Capitão", 500);
 
 		assertEquals("Capitão", record.getPlayer());
 		assertEquals(500, record.getPoints());
@@ -287,7 +287,7 @@ public class GameTest {
 	@Test
 	@DisplayName("Score record empty constructor")
 	void scoreRecordEmptyConstructorTest() {
-		Game.ScoreRecord record = new Game.ScoreRecord();
+		ScoreBoard.ScoreRecord record = new ScoreBoard.ScoreRecord();
 
 		assertNull(record.getPlayer());
 		assertEquals(0, record.getPoints());
@@ -325,9 +325,9 @@ public class GameTest {
 	@Test
 	@DisplayName("Save and load score")
 	void saveAndLoadScoreTest() {
-		Game.saveScore("TesteJUnit", 750);
+		ScoreBoard.saveScore("TesteJUnit", 750);
 
-		List<Game.ScoreRecord> scores = Game.loadScores();
+		List<ScoreBoard.ScoreRecord> scores = ScoreBoard.loadScores();
 
 		assertTrue(scores.stream().anyMatch(
 				record -> "TesteJUnit".equals(record.getPlayer())
