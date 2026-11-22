@@ -146,7 +146,7 @@ public class Game implements IGame {
 	// ==========================================
 	// SCOREBOARD (Jackson)
 	// ==========================================
-	private static final String SCORE_FILE = "scoreboard.json";
+	private static final String SCORE_FILE = "scoreboard_local.json";
 
 	public static class ScoreRecord {
 		private String player;
