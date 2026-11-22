@@ -441,6 +441,7 @@ public class GameTest {
 		);
 	}
 
+
 	@Test
 	@DisplayName("Print board with sunk ship")
 	void printBoardWithSunkShipTest() {
