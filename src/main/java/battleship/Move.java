@@ -197,7 +197,7 @@ public class Move implements IMove {
 		Map<String, Integer> unsunkBoats = new HashMap<>(hitsPerBoat);
 		unsunkBoats.keySet().removeAll(sunkBoats.keySet());
 
-		return buildBoatList(unsunkBoats, "hits");
+		return buildBoatList(unsunkBoats, "hits ");
 	}
 
 }
