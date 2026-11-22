@@ -143,41 +143,61 @@ public class Move implements IMove {
 		}
 	}
 
-	private String generateJsonResponse(int validShots, int repeatedShots, int missedShots, int outsideShots, Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
+
+	private String generateJsonResponse(
+			int validShots,
+			int repeatedShots,
+			int missedShots,
+			int outsideShots,
+			Map<String, Integer> sunkBoatsCount,
+			Map<String, Integer> hitsPerBoat) {
+
 		Map<String, Object> response = new HashMap<>();
+
 		response.put("validShots", validShots);
-		response.put("outsideShots", outsideShots);
 		response.put("repeatedShots", repeatedShots);
 		response.put("missedShots", missedShots);
-
-		// CORRIGIDO: Utilização de HashMap seguro em vez de Map.of()
-		List<Map<String, Object>> sunkBoats = new ArrayList<>();
-		for (Map.Entry<String, Integer> entry : sunkBoatsCount.entrySet()) {
-			Map<String, Object> boat = new HashMap<>();
-			boat.put("type", entry.getKey());
-			boat.put("count", entry.getValue());
-			sunkBoats.add(boat);
-		}
-		response.put("sunkBoats", sunkBoats);
-
-		List<Map<String, Object>> boatHits = new ArrayList<>();
-		for (Map.Entry<String, Integer> entry : hitsPerBoat.entrySet()) {
-			if (!sunkBoatsCount.containsKey(entry.getKey())) {
-				Map<String, Object> boat = new HashMap<>();
-				boat.put("type", entry.getKey());
-				boat.put("hits", entry.getValue());
-				boatHits.add(boat);
-			}
-		}
-		response.put("hitsOnBoats", boatHits);
+		response.put("outsideShots", outsideShots);
+		response.put("sunkBoats", buildBoatList(sunkBoatsCount, "count"));
+		response.put("hitsOnBoats", buildUnsunkBoatList(sunkBoatsCount, hitsPerBoat));
 
 		try {
-			ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-			String jsonString = objectMapper.writeValueAsString(response);
-			System.out.println(jsonString);
-			return jsonString;
+			ObjectMapper mapper = new ObjectMapper()
+					.enable(SerializationFeature.INDENT_OUTPUT);
+
+			String json = mapper.writeValueAsString(response);
+			System.out.println(json);
+
+			return json;
+
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Erro ao serializar JSON", e);
 		}
 	}
+
+	private List<Map<String, Object>> buildBoatList(
+			Map<String, Integer> boats, String valueKey) {
+
+		List<Map<String, Object>> result = new ArrayList<>();
+
+		for (Map.Entry<String, Integer> entry : boats.entrySet()) {
+			Map<String, Object> boat = new HashMap<>();
+			boat.put("type", entry.getKey());
+			boat.put(valueKey, entry.getValue());
+			result.add(boat);
+		}
+
+		return result;
+	}
+
+	private List<Map<String, Object>> buildUnsunkBoatList(
+			Map<String, Integer> sunkBoats,
+			Map<String, Integer> hitsPerBoat) {
+
+		Map<String, Integer> unsunkBoats = new HashMap<>(hitsPerBoat);
+		unsunkBoats.keySet().removeAll(sunkBoats.keySet());
+
+		return buildBoatList(unsunkBoats, "hits");
+	}
+
 }
